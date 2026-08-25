@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>luke_cln — projets</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">luke_cln<span class="dim">@github</span></div>
+  <nav>
+    <a href="https://github.com/LukeCOULON" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="term">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="term-path">luke@lukecln: ~</span>
+      </div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+
+    <h1>Luke Coulon</h1>
+    <p class="role">développeur — ammateur</p>
+  </section>
+
+  <div class="ls-label">~/projects $ ls --filter</div>
+
+  <div class="filters" id="filters"></div>
+
+  <div class="grid" id="grid">
+    <div class="loading-msg">chargement des repos…</div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <span>luke_cln — projets personnels</span>
+  <span>mis à jour automatiquement depuis GitHub</span>
+</footer>
+
+<script src="config.js"></script>
+<script src="github.js"></script>
+<script>
+  const termBody = document.getElementById('termBody');
+  const grid = document.getElementById('grid');
+  const filtersEl = document.getElementById('filters');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let allRepos = [];
+  let activeLang = 'all';
+
+  async function typeLine(el, text, speed = 18) {
+    for (let i = 0; i <= text.length; i++) {
+      el.textContent = text.slice(0, i);
+      await new Promise(r => setTimeout(r, speed));
+    }
+  }
+
+  function addLine(text, dim = false) {
+    const div = document.createElement('div');
+    div.className = 'line';
+    if (dim) div.style.color = 'var(--text-dim)';
+    termBody.appendChild(div);
+    return div;
+  }
+
+  async function addCommandLine(cmd) {
+    const div = addLine('');
+    div.innerHTML = `<span class="prompt">luke@lukecln</span>:<span class="path">~</span>$ <span class="typed-out"></span>`;
+    if (reduceMotion) {
+      div.querySelector('.typed-out').textContent = cmd;
+    } else {
+      await typeLine(div.querySelector('.typed-out'), cmd);
+      await new Promise(r => setTimeout(r, 180));
+    }
+  }
+
+  function renderCards(repos) {
+    if (repos.length === 0) {
+      grid.innerHTML = `<div class="loading-msg">Aucun repo public trouvé pour l'instant.</div>`;
+      return;
+    }
+    grid.innerHTML = repos.map(r => {
+      const color = langColor(r.language);
+      return `
+        <a class="card" href="project.html?repo=${encodeURIComponent(r.name)}">
+          <div class="card-top">
+            <span class="lang">
+              ${r.language ? `<span class="swatch" style="background:${color}"></span>${r.language}` : '<span class="swatch" style="background:var(--text-dim)"></span>—'}
+            </span>
+            <span class="stars">★ ${r.stargazers_count}</span>
+          </div>
+          <h3>${r.name}</h3>
+          <p>${getDescription(r)}</p>
+        </a>`;
+    }).join('');
+  }
+
+  function buildFilters(repos) {
+    const langs = [...new Set(repos.map(r => r.language).filter(Boolean))].sort();
+    filtersEl.innerHTML = `<span class="flag-label">--lang</span>
+      <button class="chip active" data-lang="all">tous</button>
+      ${langs.map(l => `<button class="chip" data-lang="${l}"><span class="swatch" style="background:${langColor(l)}"></span>${l}</button>`).join('')}`;
+
+    filtersEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      filtersEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      activeLang = btn.dataset.lang;
+      renderCards(activeLang === 'all' ? allRepos : allRepos.filter(r => r.language === activeLang));
+    });
+  }
+
+  async function boot() {
+    await addCommandLine('whoami');
+    addLine('Luke Coulon — dev, curieux, un peu bricoleur.', true);
+    await addCommandLine(`curl api.github.com/users/${GITHUB_USER}/repos`);
+    const loadingLine = addLine('récupération en cours…', true);
+
+    try {
+      allRepos = await fetchRepos();
+      loadingLine.textContent = `${allRepos.length} repos publics trouvés.`;
+      buildFilters(allRepos);
+      renderCards(allRepos);
+    } catch (err) {
+      loadingLine.style.color = '#ff8577';
+      if (err.status === 403) {
+        loadingLine.textContent = "limite de l'API GitHub atteinte, réessaie dans quelques minutes.";
+      } else {
+        loadingLine.textContent = "impossible de contacter l'API GitHub pour le moment.";
+      }
+      grid.innerHTML = `<div class="loading-msg">Repos indisponibles pour le moment — <a href="https://github.com/${GITHUB_USER}" target="_blank" rel="noopener">voir directement sur GitHub ↗</a></div>`;
+    }
+
+    if (!reduceMotion) {
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      termBody.appendChild(cursor);
+    }
+  }
+
+  boot();
+</script>
+
+</body>
+</html>

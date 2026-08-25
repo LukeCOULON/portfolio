@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Projet — luke_cln</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">luke_cln<span class="dim">@github</span></div>
+  <nav>
+    <a href="https://github.com/LukeCOULON" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+
+<main class="wrap" id="content">
+  <a class="back-link" href="index.html">← ~/projects</a>
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-path">luke@lukecln: ~/projects</span>
+    </div>
+    <div class="term-body" id="termBody">
+      <div class="line loading-msg">chargement du projet…</div>
+    </div>
+  </div>
+  <div id="detailBody"></div>
+</main>
+
+<footer class="site-footer">
+  <span>luke_cln — projets personnels</span>
+  <a href="index.html">← retour à l'accueil</a>
+</footer>
+
+<script src="config.js"></script>
+<script src="github.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const repoName = params.get('repo');
+  const termBody = document.getElementById('termBody');
+  const detailBody = document.getElementById('detailBody');
+
+  function notFound(message) {
+    termBody.innerHTML = `
+      <div class="line"><span class="prompt">luke@lukecln</span>:<span class="path">~/projects</span>$ cat ${repoName || '???'}</div>
+      <div class="line" style="color:#ff8577">cat: ${message}</div>`;
+  }
+
+  async function load() {
+    if (!repoName) { notFound("aucun repo précisé dans l'URL"); return; }
+
+    termBody.innerHTML = `<div class="line"><span class="prompt">luke@lukecln</span>:<span class="path">~/projects</span>$ cat ${repoName}/README.md</div>`;
+
+    let repo;
+    try {
+      repo = await fetchRepo(repoName);
+    } catch (err) {
+      if (err.status === 404) notFound(`${repoName}: repo introuvable ou privé`);
+      else if (err.status === 403) notFound("limite de l'API GitHub atteinte, réessaie plus tard");
+      else notFound("impossible de contacter l'API GitHub");
+      return;
+    }
+
+    document.title = repo.name + " — luke_cln";
+    document.getElementById('pageTitle').textContent = repo.name + " — luke_cln";
+
+    const color = langColor(repo.language);
+    const zip = zipUrl(repo);
+
+    detailBody.innerHTML = `
+      <div class="detail-head">
+        <h1>${repo.name}</h1>
+        <div class="tagline">${getDescription(repo)}</div>
+      </div>
+
+      <div class="tag-row">
+        ${repo.language ? `<span class="tag"><span class="swatch" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${color};margin-right:5px;"></span>${repo.language}</span>` : ''}
+        <span class="tag">★ ${repo.stargazers_count}</span>
+        <span class="tag">maj ${new Date(repo.pushed_at).toLocaleDateString('fr-FR')}</span>
+      </div>
+
+      <div class="prose" id="readmeSlot">
+        <p style="color:var(--text-dim)">chargement du README…</p>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('git clone ${repo.clone_url}'); this.textContent='copié ✓'; setTimeout(()=>this.textContent='copier',1200)">copier</button>
+        $ git clone ${repo.clone_url}
+      </div>
+
+      <div class="cta-row">
+        <a class="btn primary" href="${zip}">⭳ Télécharger le ZIP</a>
+        <a class="btn ghost" href="${repo.html_url}" target="_blank" rel="noopener">Voir sur GitHub ↗</a>
+      </div>
+    `;
+
+    const readmeSlot = document.getElementById('readmeSlot');
+    try {
+      const raw = await fetchReadme(repoName);
+      if (raw) {
+        const html = DOMPurify.sanitize(marked.parse(raw));
+        readmeSlot.innerHTML = `<div class="readme-content">${html}</div>`;
+      } else {
+        readmeSlot.innerHTML = `<p style="color:var(--text-dim)">Pas de README dans ce repo pour l'instant.</p>`;
+      }
+    } catch {
+      readmeSlot.innerHTML = `<p style="color:var(--text-dim)">Impossible de charger le README pour l'instant.</p>`;
+    }
+  }
+
+  load();
+</script>
+
+</body>
+</html>
