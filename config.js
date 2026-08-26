@@ -2,7 +2,7 @@
 const GITHUB_USER = "LukeCOULON";
 
 const EXCLUDE_REPOS = [
-// repo caché
+https://github.com/LukeCOULON/tools
 ];
 
 const DESCRIPTION_OVERRIDES = {
