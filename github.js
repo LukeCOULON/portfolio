@@ -1,96 +1,175 @@
-// ============================================================
-// Tout ce qui parle à l'API GitHub. Rien à modifier ici en temps normal.
-// ============================================================
+/* =====================================================
+   GITHUB.JS
+   Récupération des dépôts GitHub, mise en cache légère,
+   et petits utilitaires utilisés par project.html
+   (fetchRepos, fetchReadme, langColor, getDescription, zipUrl)
+===================================================== */
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_KEY = `gh-repos-${GITHUB_USER}`;
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-function cacheGet(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL) return null;
-    return data;
-  } catch { return null; }
+
+/* =====================================================
+   COULEURS PAR LANGAGE
+   (mêmes teintes que GitHub, pour rester familier)
+===================================================== */
+
+const LANGUAGE_COLORS = {
+  JavaScript: "#f1e05a",
+  TypeScript: "#3178c6",
+  Python: "#3572A5",
+  HTML: "#e34c26",
+  CSS: "#563d7c",
+  Java: "#b07219",
+  "C": "#555555",
+  "C++": "#f34b7d",
+  "C#": "#178600",
+  Go: "#00ADD8",
+  Rust: "#dea584",
+  PHP: "#4F5D95",
+  Shell: "#89e051",
+  Lua: "#000080",
+  Ruby: "#701516",
+  Swift: "#F05138",
+  Kotlin: "#A97BFF",
+};
+
+function langColor(language) {
+  return LANGUAGE_COLORS[language] || "var(--muted)";
 }
 
-function cacheSet(key, data) {
-  try { localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })); } catch {}
-}
 
-async function ghFetch(url, opts = {}) {
-  const res = await fetch(url, {
-    headers: { Accept: "application/vnd.github+json", ...(opts.headers || {}) }
-  });
-  if (!res.ok) {
-    const err = new Error(`GitHub API a répondu ${res.status}`);
-    err.status = res.status;
-    throw err;
-  }
-  return opts.raw ? res.text() : res.json();
-}
-
-// Liste des repos publics, forks et repos exclus retirés
-async function fetchRepos() {
-  const cacheKey = `gh:repos:${GITHUB_USER}`;
-  const cached = cacheGet(cacheKey);
-  if (cached) return cached;
-
-  const data = await ghFetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated`);
-  const filtered = data
-    .filter(r => !r.fork)
-    .filter(r => !EXCLUDE_REPOS.includes(r.name));
-
-  cacheSet(cacheKey, filtered);
-  return filtered;
-}
-
-// Détails d'un repo précis
-async function fetchRepo(name) {
-  const cacheKey = `gh:repo:${GITHUB_USER}:${name}`;
-  const cached = cacheGet(cacheKey);
-  if (cached) return cached;
-
-  const data = await ghFetch(`https://api.github.com/repos/${GITHUB_USER}/${name}`);
-  cacheSet(cacheKey, data);
-  return data;
-}
-
-// README brut (markdown) d'un repo, "" si absent
-async function fetchReadme(name) {
-  const cacheKey = `gh:readme:${GITHUB_USER}:${name}`;
-  const cached = cacheGet(cacheKey);
-  if (cached !== null) return cached;
-
-  try {
-    const text = await ghFetch(`https://api.github.com/repos/${GITHUB_USER}/${name}/readme`, {
-      headers: { Accept: "application/vnd.github.raw" },
-      raw: true
-    });
-    cacheSet(cacheKey, text);
-    return text;
-  } catch {
-    cacheSet(cacheKey, "");
-    return "";
-  }
-}
+/* =====================================================
+   DESCRIPTION (avec override manuel possible)
+===================================================== */
 
 function getDescription(repo) {
-  return DESCRIPTION_OVERRIDES[repo.name] || repo.description || "Pas encore de description sur GitHub.";
+  if (DESCRIPTION_OVERRIDES && DESCRIPTION_OVERRIDES[repo.name]) {
+    return DESCRIPTION_OVERRIDES[repo.name];
+  }
+  return repo.description || "Aucune description disponible.";
 }
 
-const LANG_COLORS = {
-  javascript: "#ffb454", typescript: "#5aa9e6", python: "#6fd6c4", html: "#e0704a",
-  css: "#a780e0", java: "#e0a15e", go: "#5ecbb0", rust: "#e0824f", c: "#8fa3b3",
-  "c++": "#8fa3b3", "c#": "#7fae5e", ruby: "#e05f6e", php: "#8892bf", shell: "#9aa0a6",
-  default: "#9aa0a6"
-};
-function langColor(lang) {
-  if (!lang) return LANG_COLORS.default;
-  return LANG_COLORS[lang.toLowerCase()] || LANG_COLORS.default;
-}
+
+/* =====================================================
+   URL DE TELECHARGEMENT ZIP
+===================================================== */
 
 function zipUrl(repo) {
   const branch = repo.default_branch || "main";
-  return `https://github.com/${repo.full_name}/archive/refs/heads/${branch}.zip`;
+  return `https://github.com/${GITHUB_USER}/${repo.name}/archive/refs/heads/${branch}.zip`;
+}
+
+
+/* =====================================================
+   RECUPERATION DES REPOS (avec cache sessionStorage)
+===================================================== */
+
+async function fetchRepos() {
+
+  const cached = readCache();
+
+  if (cached) {
+    return cached;
+  }
+
+  const response = await fetch(
+    `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`,
+    { headers: { Accept: "application/vnd.github+json" } }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Erreur GitHub API : ${response.status}`);
+  }
+
+  const repos = await response.json();
+
+  const filtered = repos.filter(repo =>
+    !repo.fork &&
+    !EXCLUDE_REPOS.includes(repo.name)
+  );
+
+  writeCache(filtered);
+
+  return filtered;
+
+}
+
+
+/* =====================================================
+   RECUPERATION DU README D'UN REPO
+===================================================== */
+
+async function fetchReadme(repoName) {
+
+  const response = await fetch(
+    `https://api.github.com/repos/${GITHUB_USER}/${repoName}/readme`,
+    { headers: { Accept: "application/vnd.github+json" } }
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Erreur GitHub API : ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  // Le contenu est encodé en base64 (UTF-8)
+  const decoded = decodeURIComponent(
+    atob(data.content.replace(/\n/g, ""))
+      .split("")
+      .map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+      .join("")
+  );
+
+  return decoded;
+
+}
+
+
+/* =====================================================
+   CACHE (évite de spammer l'API GitHub, limitée
+   à 60 requêtes/heure sans authentification)
+===================================================== */
+
+function readCache() {
+
+  try {
+
+    const raw = sessionStorage.getItem(CACHE_KEY);
+
+    if (!raw) {
+      return null;
+    }
+
+    const { timestamp, data } = JSON.parse(raw);
+
+    if (Date.now() - timestamp > CACHE_TTL_MS) {
+      return null;
+    }
+
+    return data;
+
+  } catch (error) {
+    return null;
+  }
+
+}
+
+function writeCache(data) {
+
+  try {
+
+    sessionStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ timestamp: Date.now(), data })
+    );
+
+  } catch (error) {
+    // sessionStorage indisponible ou plein : on continue sans cache
+  }
+
 }

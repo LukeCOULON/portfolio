@@ -1,118 +1,1069 @@
 <!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Projet — luke_cln</title>
-<link rel="stylesheet" href="style.css">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
+<title>Projets — Luke Coulon</title>
+
+<link
+  rel="stylesheet"
+  href="style.css"
+>
+
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+
 </head>
+
 <body>
 
-<header class="topbar">
-  <div class="brand">luke_cln<span class="dim">@github</span></div>
-  <nav>
-    <a href="https://github.com/LukeCOULON" target="_blank" rel="noopener">GitHub ↗</a>
-  </nav>
-</header>
+<div class="portfolio">
 
-<main class="wrap" id="content">
-  <a class="back-link" href="index.html">← ~/projects</a>
-  <div class="term">
-    <div class="term-bar">
-      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="term-path">luke@lukecln: ~/projects</span>
-    </div>
-    <div class="term-body" id="termBody">
-      <div class="line loading-msg">chargement du projet…</div>
-    </div>
+<!-- =====================================================
+     TERMINAL
+===================================================== -->
+
+<section class="terminal">
+
+  <div class="terminal-header">
+
+<div class="terminal-buttons">
+
+  <span class="dot red"></span>
+  <span class="dot yellow"></span>
+  <span class="dot green"></span>
+
+</div>
+
+<span class="terminal-title">
+  luke@portfolio:~/projects
+</span>
+
   </div>
-  <div id="detailBody"></div>
-</main>
 
-<footer class="site-footer">
-  <span>luke_cln — projets personnels</span>
-  <a href="index.html">← retour à l'accueil</a>
+  <div class="terminal-body">
+
+<div class="terminal-line muted">
+  Initialisation de l'explorateur...
+</div>
+
+<div class="terminal-line success">
+  ✓ Connexion GitHub établie
+</div>
+
+<br>
+
+<div class="terminal-line">
+
+  <span class="prompt-user">
+    luke@portfolio
+  </span>:<span class="prompt-path">
+    ~/projects
+  </span>$
+
+  <span id="terminalCommand">
+    ls -la
+  </span>
+
+</div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<section class="projects-header">
+
+<a
+href="index.html"
+class="back-link"
+
+>
+
+← retour à l'accueil
+
+  </a>
+
+  <div class="hero-label">
+    PORTFOLIO / PROJECTS
+  </div>
+
+  <h1>
+    Mes <span>projets</span>
+  </h1>
+
+  <p>
+    Une sélection de projets personnels,
+    expérimentations et outils que j'ai développés.
+  </p>
+
+</section>
+
+<!-- =====================================================
+     STATISTIQUES
+===================================================== -->
+
+<section class="project-stats">
+
+  <div class="stat-card">
+
+<span class="stat-number" id="repoCount">
+  —
+</span>
+
+<span class="stat-label">
+  projets
+</span>
+
+  </div>
+
+  <div class="stat-card">
+
+<span class="stat-number" id="languageCount">
+  —
+</span>
+
+<span class="stat-label">
+  langages
+</span>
+
+  </div>
+
+  <div class="stat-card">
+
+<span class="stat-number" id="starCount">
+  —
+</span>
+
+<span class="stat-label">
+  étoiles
+</span>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     FILTRES
+===================================================== -->
+
+<section class="project-controls">
+
+  <div class="search-box">
+
+<span>
+  $
+</span>
+
+<input
+  type="text"
+  id="searchInput"
+  placeholder="rechercher un projet..."
+  autocomplete="off"
+>
+
+  </div>
+
+  <div
+    class="filters"
+    id="filters"
+  >
+
+<button
+  class="filter active"
+  data-language="all"
+>
+  tous
+</button>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     PROJETS
+===================================================== -->
+
+<section>
+
+  <div class="section-title">
+
+<span>
+  ~/projects
+</span>
+
+<div></div>
+
+  </div>
+
+  <div
+    class="projects-grid"
+    id="projectsGrid"
+  >
+
+<div class="loading">
+  récupération des projets...
+</div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     DETAIL
+===================================================== -->
+
+<section
+  class="project-detail"
+  id="projectDetail"
+  style="display:none"
+>
+
+  <div class="section-title">
+
+<span>
+  ~/projects/current
+</span>
+
+<div></div>
+
+  </div>
+
+  <div class="detail-terminal">
+
+<div class="terminal-header">
+
+  <div class="terminal-buttons">
+
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+
+  </div>
+
+  <span
+    class="terminal-title"
+    id="detailPath"
+  >
+    project
+  </span>
+
+</div>
+
+
+<div
+  class="detail-content"
+  id="detailContent"
+>
+
+</div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  <span>
+    luke_cln © 2026
+  </span>
+
+  <a href="index.html">
+    ← accueil
+  </a>
+
 </footer>
 
-<script src="config.js"></script>
-<script src="github.js"></script>
-<script>
-  const params = new URLSearchParams(location.search);
-  const repoName = params.get('repo');
-  const termBody = document.getElementById('termBody');
-  const detailBody = document.getElementById('detailBody');
+</div>
 
-  function notFound(message) {
-    termBody.innerHTML = `
-      <div class="line"><span class="prompt">luke@lukecln</span>:<span class="path">~/projects</span>$ cat ${repoName || '???'}</div>
-      <div class="line" style="color:#ff8577">cat: ${message}</div>`;
+<script src="config.js"></script>
+
+<script src="github.js"></script>
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+const projectsGrid =
+  document.getElementById(
+    "projectsGrid"
+  );
+
+const searchInput =
+  document.getElementById(
+    "searchInput"
+  );
+
+const filters =
+  document.getElementById(
+    "filters"
+  );
+
+const projectDetail =
+  document.getElementById(
+    "projectDetail"
+  );
+
+const detailContent =
+  document.getElementById(
+    "detailContent"
+  );
+
+const detailPath =
+  document.getElementById(
+    "detailPath"
+  );
+
+
+let repositories = [];
+
+let activeLanguage = "all";
+
+
+
+/* =====================================================
+   ECHAPPER HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+  if (!value) {
+    return "";
   }
 
-  async function load() {
-    if (!repoName) { notFound("aucun repo précisé dans l'URL"); return; }
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
-    termBody.innerHTML = `<div class="line"><span class="prompt">luke@lukecln</span>:<span class="path">~/projects</span>$ cat ${repoName}/README.md</div>`;
+}
 
-    let repo;
-    try {
-      repo = await fetchRepo(repoName);
-    } catch (err) {
-      if (err.status === 404) notFound(`${repoName}: repo introuvable ou privé`);
-      else if (err.status === 403) notFound("limite de l'API GitHub atteinte, réessaie plus tard");
-      else notFound("impossible de contacter l'API GitHub");
-      return;
-    }
 
-    document.title = repo.name + " — luke_cln";
-    document.getElementById('pageTitle').textContent = repo.name + " — luke_cln";
 
-    const color = langColor(repo.language);
-    const zip = zipUrl(repo);
+/* =====================================================
+   CARTE PROJET
+===================================================== */
 
-    detailBody.innerHTML = `
-      <div class="detail-head">
-        <h1>${repo.name}</h1>
-        <div class="tagline">${getDescription(repo)}</div>
+function createProjectCard(repo) {
+
+  const language =
+    repo.language || "Autre";
+
+
+  const color =
+    typeof langColor === "function"
+      ? langColor(repo.language)
+      : "var(--text-dim)";
+
+
+  const description =
+    typeof getDescription === "function"
+      ? getDescription(repo)
+      : (
+          repo.description ||
+          "Aucune description disponible."
+        );
+
+
+  return `
+
+    <article
+      class="project-card"
+      data-name="${escapeHTML(repo.name)}"
+    >
+
+      <div class="project-card-top">
+
+        <span class="project-language">
+
+          <span
+            class="language-dot"
+            style="background:${color}"
+          ></span>
+
+          ${escapeHTML(language)}
+
+        </span>
+
+
+        <span class="project-stars">
+
+          ★ ${repo.stargazers_count || 0}
+
+        </span>
+
       </div>
 
-      <div class="tag-row">
-        ${repo.language ? `<span class="tag"><span class="swatch" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${color};margin-right:5px;"></span>${repo.language}</span>` : ''}
-        <span class="tag">★ ${repo.stargazers_count}</span>
-        <span class="tag">maj ${new Date(repo.pushed_at).toLocaleDateString('fr-FR')}</span>
+
+      <h2>
+        ${escapeHTML(repo.name)}
+      </h2>
+
+
+      <p>
+        ${escapeHTML(description)}
+      </p>
+
+
+      <div class="project-card-footer">
+
+        <span>
+          mise à jour
+          ${new Date(
+            repo.pushed_at
+          ).toLocaleDateString("fr-FR")}
+        </span>
+
+
+        <button
+          onclick="openProject('${encodeURIComponent(repo.name)}')"
+        >
+          ouvrir →
+        </button>
+
       </div>
 
-      <div class="prose" id="readmeSlot">
-        <p style="color:var(--text-dim)">chargement du README…</p>
+    </article>
+
+  `;
+
+}
+
+
+
+/* =====================================================
+   AFFICHAGE DES PROJETS
+===================================================== */
+
+function renderProjects() {
+
+  const search =
+    searchInput.value
+      .trim()
+      .toLowerCase();
+
+
+  let filtered =
+    repositories.filter(repo => {
+
+      const matchesLanguage =
+        activeLanguage === "all" ||
+        repo.language === activeLanguage;
+
+
+      const text =
+        (
+          repo.name +
+          " " +
+          (repo.description || "") +
+          " " +
+          (repo.language || "")
+        ).toLowerCase();
+
+
+      const matchesSearch =
+        !search ||
+        text.includes(search);
+
+
+      return (
+        matchesLanguage &&
+        matchesSearch
+      );
+
+    });
+
+
+  if (!filtered.length) {
+
+    projectsGrid.innerHTML = `
+
+      <div class="loading">
+
+        Aucun projet trouvé.
+
       </div>
 
-      <div class="code-block">
-        <button class="copy-btn" onclick="navigator.clipboard.writeText('git clone ${repo.clone_url}'); this.textContent='copié ✓'; setTimeout(()=>this.textContent='copier',1200)">copier</button>
-        $ git clone ${repo.clone_url}
-      </div>
-
-      <div class="cta-row">
-        <a class="btn primary" href="${zip}">⭳ Télécharger le ZIP</a>
-        <a class="btn ghost" href="${repo.html_url}" target="_blank" rel="noopener">Voir sur GitHub ↗</a>
-      </div>
     `;
 
-    const readmeSlot = document.getElementById('readmeSlot');
-    try {
-      const raw = await fetchReadme(repoName);
-      if (raw) {
-        const html = DOMPurify.sanitize(marked.parse(raw));
-        readmeSlot.innerHTML = `<div class="readme-content">${html}</div>`;
-      } else {
-        readmeSlot.innerHTML = `<p style="color:var(--text-dim)">Pas de README dans ce repo pour l'instant.</p>`;
-      }
-    } catch {
-      readmeSlot.innerHTML = `<p style="color:var(--text-dim)">Impossible de charger le README pour l'instant.</p>`;
-    }
+    return;
+
   }
 
-  load();
+
+  projectsGrid.innerHTML =
+    filtered
+      .map(createProjectCard)
+      .join("");
+
+}
+
+
+
+/* =====================================================
+   FILTRES
+===================================================== */
+
+function createFilters() {
+
+  const languages =
+    [
+      ...new Set(
+        repositories
+          .map(repo => repo.language)
+          .filter(Boolean)
+      )
+    ].sort();
+
+
+  filters.innerHTML = `
+
+    <button
+      class="filter active"
+      data-language="all"
+    >
+      tous
+    </button>
+
+    ${
+      languages.map(language => {
+
+        const color =
+          typeof langColor === "function"
+            ? langColor(language)
+            : "var(--green)";
+
+
+        return `
+
+          <button
+            class="filter"
+            data-language="${escapeHTML(language)}"
+          >
+
+            <span
+              class="language-dot"
+              style="background:${color}"
+            ></span>
+
+            ${escapeHTML(language)}
+
+          </button>
+
+        `;
+
+      }).join("")
+    }
+
+  `;
+
+
+  filters
+    .querySelectorAll(".filter")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          filters
+            .querySelectorAll(".filter")
+            .forEach(
+              btn =>
+                btn.classList.remove(
+                  "active"
+                )
+            );
+
+
+          button.classList.add(
+            "active"
+          );
+
+
+          activeLanguage =
+            button.dataset.language;
+
+
+          renderProjects();
+
+        }
+      );
+
+    });
+
+}
+
+
+
+/* =====================================================
+   STATISTIQUES
+===================================================== */
+
+function updateStats() {
+
+  const repoCount =
+    repositories.length;
+
+
+  const languages =
+    new Set(
+      repositories
+        .map(repo => repo.language)
+        .filter(Boolean)
+    );
+
+
+  const stars =
+    repositories.reduce(
+      (
+        total,
+        repo
+      ) =>
+        total +
+        (repo.stargazers_count || 0),
+      0
+    );
+
+
+  document.getElementById(
+    "repoCount"
+  ).textContent =
+    repoCount;
+
+
+  document.getElementById(
+    "languageCount"
+  ).textContent =
+    languages.size;
+
+
+  document.getElementById(
+    "starCount"
+  ).textContent =
+    stars;
+
+}
+
+
+
+/* =====================================================
+   OUVRIR UN PROJET
+===================================================== */
+
+async function openProject(encodedName) {
+
+  const name =
+    decodeURIComponent(encodedName);
+
+
+  const repo =
+    repositories.find(
+      r => r.name === name
+    );
+
+
+  if (!repo) {
+    return;
+  }
+
+
+  projectDetail.style.display =
+    "block";
+
+
+  detailPath.textContent =
+    `luke@portfolio:~/projects/${repo.name}`;
+
+
+  const language =
+    repo.language || "Autre";
+
+
+  const color =
+    typeof langColor === "function"
+      ? langColor(repo.language)
+      : "var(--text-dim)";
+
+
+  const description =
+    typeof getDescription === "function"
+      ? getDescription(repo)
+      : (
+          repo.description ||
+          "Aucune description disponible."
+        );
+
+
+  const zip =
+    typeof zipUrl === "function"
+      ? zipUrl(repo)
+      : `https://github.com/${GITHUB_USER}/${repo.name}/archive/refs/heads/${repo.default_branch || "main"}.zip`;
+
+
+  detailContent.innerHTML = `
+
+    <div class="detail-header">
+
+      <div>
+
+        <div class="detail-label">
+
+          ${escapeHTML(language)}
+
+        </div>
+
+
+        <h2>
+          ${escapeHTML(repo.name)}
+        </h2>
+
+
+        <p>
+          ${escapeHTML(description)}
+        </p>
+
+      </div>
+
+
+      <button
+        class="close-detail"
+        onclick="closeProject()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="detail-tags">
+
+      ${
+        repo.language
+        ? `
+          <span class="detail-tag">
+
+            <span
+              class="language-dot"
+              style="background:${color}"
+            ></span>
+
+            ${escapeHTML(repo.language)}
+
+          </span>
+        `
+        : ""
+      }
+
+
+      <span class="detail-tag">
+        ★ ${repo.stargazers_count || 0}
+      </span>
+
+
+      <span class="detail-tag">
+
+        ${repo.forks_count || 0}
+        forks
+
+      </span>
+
+
+      <span class="detail-tag">
+
+        maj.
+        ${new Date(
+          repo.pushed_at
+        ).toLocaleDateString("fr-FR")}
+
+      </span>
+
+    </div>
+
+
+    <div
+      class="readme"
+      id="readme"
+    >
+
+      <div class="loading">
+        chargement du README...
+      </div>
+
+    </div>
+
+
+    <div class="project-actions">
+
+      <a
+        href="${zip}"
+        class="project-button primary"
+      >
+        ↓ Télécharger le ZIP
+      </a>
+
+
+      <a
+        href="${repo.html_url}"
+        target="_blank"
+        rel="noopener"
+        class="project-button"
+      >
+        GitHub ↗
+      </a>
+
+    </div>
+
+  `;
+
+
+  projectDetail.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+
+  /* README */
+
+  const readme =
+    document.getElementById(
+      "readme"
+    );
+
+
+  try {
+
+    const raw =
+      await fetchReadme(repo.name);
+
+
+    if (!raw) {
+
+      readme.innerHTML = `
+
+        <p class="muted">
+
+          Ce projet ne possède pas
+          encore de README.
+
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+
+    const html =
+      DOMPurify.sanitize(
+        marked.parse(raw)
+      );
+
+
+    readme.innerHTML =
+      html;
+
+  }
+  catch(error) {
+
+    readme.innerHTML = `
+
+      <p class="error">
+
+        Impossible de charger le README.
+
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   FERMER PROJET
+===================================================== */
+
+function closeProject() {
+
+  projectDetail.style.display =
+    "none";
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/* =====================================================
+   RECHERCHE
+===================================================== */
+
+searchInput.addEventListener(
+  "input",
+  renderProjects
+);
+
+
+
+/* =====================================================
+   CHARGEMENT GITHUB
+===================================================== */
+
+async function loadProjects() {
+
+  try {
+
+    repositories =
+      await fetchRepos();
+
+
+    /*
+      Tri :
+      les projets récemment modifiés
+      apparaissent en premier.
+    */
+
+    repositories.sort(
+      (a, b) =>
+        new Date(b.pushed_at) -
+        new Date(a.pushed_at)
+    );
+
+
+    updateStats();
+
+    createFilters();
+
+    renderProjects();
+
+
+  }
+  catch(error) {
+
+    projectsGrid.innerHTML = `
+
+      <div class="loading error">
+
+        Impossible de récupérer
+        les projets GitHub.
+
+        <br><br>
+
+        <a
+          href="https://github.com/${GITHUB_USER}"
+          target="_blank"
+          rel="noopener"
+        >
+          Voir directement sur GitHub ↗
+        </a>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   URL ?repo=...
+===================================================== */
+
+function openProjectFromURL() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const repo =
+    params.get("repo");
+
+
+  if (!repo) {
+    return;
+  }
+
+
+  /*
+    On attend que les repos soient
+    chargés avant d'ouvrir le projet.
+  */
+
+  const interval =
+    setInterval(() => {
+
+      if (!repositories.length) {
+        return;
+      }
+
+
+      const found =
+        repositories.find(
+          r => r.name === repo
+        );
+
+
+      if (found) {
+
+        clearInterval(
+          interval
+        );
+
+
+        openProject(
+          encodeURIComponent(repo)
+        );
+
+      }
+
+    }, 100);
+
+}
+
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadProjects()
+  .then(
+    openProjectFromURL
+  );
+
 </script>
 
 </body>
