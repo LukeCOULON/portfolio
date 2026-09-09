@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes projets personnels — Luke Coulon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="home projects-page">
+
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-a"></span>
+  <span class="orb orb-b"></span>
+  <span class="orb orb-c"></span>
+  <span class="grain"></span>
+</div>
+
+<header class="topbar">
+  <a href="index.html" class="brand">Luke<span>.</span></a>
+  <a href="index.html" class="back-link">← retour à l'accueil</a>
+</header>
+
+<main class="projects-page-main">
+  <section class="projects-page-intro reveal">
+    <span class="section-index">Exemples / Projets personnels</span>
+    <h1>Mes projets<br><span>principaux</span></h1>
+    <p>Voici quelques exemples de projets personnels que je pourrai développer : entreprise, jeu vidéo, outil ou application.</p>
+  </section>
+
+  <section class="personal-project-list" aria-label="Présentation de mes projets personnels">
+    <article class="personal-project tilt">
+      <div class="personal-project-meta"><span>01</span><span>Exemple</span></div>
+      <div class="personal-project-content">
+        <div>
+          <span class="hero-label">Web / Entreprise</span>
+          <h2>Site pour une entreprise</h2>
+          <p>Un exemple de site vitrine pour présenter une entreprise, ses services, son identité et les moyens de la contacter.</p>
+        </div>
+        <div class="project-tech-list"><span>Présentation</span><span>Services</span><span>Contact</span></div>
+      </div>
+    </article>
+
+    <article class="personal-project tilt">
+      <div class="personal-project-meta"><span>02</span><span>Exemple</span></div>
+      <div class="personal-project-content">
+        <div>
+          <span class="hero-label">Jeu / Création</span>
+          <h2>Jeu vidéo</h2>
+          <p>Un exemple de jeu vidéo personnel avec un concept, un univers et des mécaniques imaginés pour proposer une expérience originale.</p>
+        </div>
+        <div class="project-tech-list"><span>Gameplay</span><span>Univers</span><span>Progression</span></div>
+      </div>
+    </article>
+
+    <article class="personal-project tilt">
+      <div class="personal-project-meta"><span>03</span><span>Exemple</span></div>
+      <div class="personal-project-content">
+        <div>
+          <span class="hero-label">Application / Utilité</span>
+          <h2>Outil du quotidien</h2>
+          <p>Un exemple d'application pensée pour répondre à un besoin concret, organiser des informations ou automatiser une tâche répétitive.</p>
+        </div>
+        <div class="project-tech-list"><span>Organisation</span><span>Automatisation</span><span>Interface</span></div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-row">
+    <span>luke_cln © 2026</span>
+    <a href="index.html">← accueil</a>
+  </div>
+  <div class="footer-meta">
+    <span>Dernière mise à jour : 09/09/2026</span>
+    <span>Version : 1.4.2</span>
+  </div>
+</footer>
+
+<script>
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (!reduceMotion) {
+  document.querySelectorAll(".tilt").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(700px) rotateX(${y * -6}deg) rotateY(${x * 6}deg) translateY(-3px)`;
+    });
+    card.addEventListener("pointerleave", () => { card.style.transform = ""; });
+  });
+}
+</script>
+</body>
+</html>
