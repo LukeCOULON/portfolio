@@ -819,10 +819,33 @@ body.home .brand {
 }
 
 .featured-project-tag {
-  margin-top: auto;
   color: var(--cyan);
   font-family: var(--mono);
   font-size: 11px;
+}
+
+.featured-project-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.featured-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.featured-project-link:hover {
+  color: var(--text);
 }
 
 .projects-more-link {
