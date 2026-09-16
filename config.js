@@ -4,7 +4,14 @@ const EXCLUDE_REPOS = [
   "tools",
   "reporeader",
   "hy",
-  "thomasfit"
+  "thomasfit",
+  "multilaunch-install",
+  "multilaunch",
+  "wikishit",
+  "PClear",
+  "MDPAD",
+  "trackerpython1.0",
+  "ipgrabber"
 ];
 
 const DESCRIPTION_OVERRIDES = {
