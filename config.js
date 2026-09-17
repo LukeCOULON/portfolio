@@ -11,7 +11,8 @@ const EXCLUDE_REPOS = [
   "PClear",
   "MDPAD",
   "trackerpython1.0",
-  "ipgrabber"
+  "ipgrabber",
+  "TSTI2D"
 ];
 
 const DESCRIPTION_OVERRIDES = {
