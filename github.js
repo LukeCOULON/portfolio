@@ -5,13 +5,13 @@
    (fetchRepos, fetchReadme, langColor, getDescription, zipUrl)
 ===================================================== */
 
-const CACHE_KEY = `gh-repos-${GITHUB_USER}`;
+// v2 invalide les anciennes entrées potentiellement incohérentes.
+const CACHE_KEY = `gh-repos-v2-${GITHUB_USER}`;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 
 /* =====================================================
    COULEURS PAR LANGAGE
-   (mêmes teintes que GitHub, pour rester familier)
 ===================================================== */
 
 const LANGUAGE_COLORS = {
@@ -57,42 +57,66 @@ function getDescription(repo) {
 
 function zipUrl(repo) {
   const branch = repo.default_branch || "main";
-  return `https://github.com/${GITHUB_USER}/${repo.name}/archive/refs/heads/${branch}.zip`;
+  return `https://github.com/${GITHUB_USER}/${repo.name}/archive/refs/heads/${encodeURIComponent(branch)}.zip`;
 }
 
 
 /* =====================================================
-   RECUPERATION DES REPOS (avec cache sessionStorage)
+   RECUPERATION DES REPOS
 ===================================================== */
 
 async function fetchRepos() {
-
   const cached = readCache();
-
   if (cached) {
     return cached;
   }
 
-  const response = await fetch(
-    `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=pushed`,
-    { headers: { Accept: "application/vnd.github+json" } }
-  );
+  // L'API liste au maximum 100 dépôts par page. Suivre les pages suivantes
+  // évite de perdre des projets si le compte dépasse cette limite.
+  const repos = [];
+  for (let page = 1; ; page += 1) {
+    const url = new URL(`https://api.github.com/users/${encodeURIComponent(GITHUB_USER)}/repos`);
+    url.search = new URLSearchParams({
+      per_page: "100",
+      sort: "pushed",
+      page: String(page),
+    }).toString();
 
-  if (!response.ok) {
-    throw new Error(`Erreur GitHub API : ${response.status}`);
+    const response = await fetch(url.toString(), {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+
+    if (!response.ok) {
+      let detail = "";
+      try {
+        const body = await response.json();
+        detail = body.message ? ` — ${body.message}` : "";
+      } catch (_) {
+        // Le corps de réponse peut ne pas être du JSON.
+      }
+      throw new Error(`Erreur GitHub API : ${response.status}${detail}`);
+    }
+
+    const pageRepos = await response.json();
+    if (!Array.isArray(pageRepos)) {
+      throw new Error("Réponse inattendue de l’API GitHub (liste de dépôts attendue).");
+    }
+
+    repos.push(...pageRepos);
+    if (pageRepos.length < 100) {
+      break;
+    }
   }
 
-  const repos = await response.json();
-
   const filtered = repos.filter(repo =>
-    !repo.fork &&
-    !EXCLUDE_REPOS.includes(repo.name)
+    repo && repo.name && !repo.fork && !EXCLUDE_REPOS.includes(repo.name)
   );
 
   writeCache(filtered);
-
   return filtered;
-
 }
 
 
@@ -101,10 +125,14 @@ async function fetchRepos() {
 ===================================================== */
 
 async function fetchReadme(repoName) {
-
   const response = await fetch(
-    `https://api.github.com/repos/${GITHUB_USER}/${repoName}/readme`,
-    { headers: { Accept: "application/vnd.github+json" } }
+    `https://api.github.com/repos/${encodeURIComponent(GITHUB_USER)}/${encodeURIComponent(repoName)}/readme`,
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    }
   );
 
   if (response.status === 404) {
@@ -116,60 +144,47 @@ async function fetchReadme(repoName) {
   }
 
   const data = await response.json();
-
-  // Le contenu est encodé en base64 (UTF-8)
-  const decoded = decodeURIComponent(
-    atob(data.content.replace(/\n/g, ""))
-      .split("")
-      .map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join("")
+  const bytes = Uint8Array.from(
+    atob(data.content.replace(/\s/g, "")),
+    character => character.charCodeAt(0)
   );
-
-  return decoded;
-
+  return new TextDecoder("utf-8").decode(bytes);
 }
 
 
 /* =====================================================
-   CACHE (évite de spammer l'API GitHub, limitée
-   à 60 requêtes/heure sans authentification)
+   CACHE
 ===================================================== */
 
 function readCache() {
-
   try {
-
     const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
 
-    if (!raw) {
+    const { timestamp, data } = JSON.parse(raw);
+    if (!Array.isArray(data) || !Number.isFinite(timestamp)) {
+      sessionStorage.removeItem(CACHE_KEY);
       return null;
     }
 
-    const { timestamp, data } = JSON.parse(raw);
-
     if (Date.now() - timestamp > CACHE_TTL_MS) {
+      sessionStorage.removeItem(CACHE_KEY);
       return null;
     }
 
     return data;
-
   } catch (error) {
     return null;
   }
-
 }
 
 function writeCache(data) {
-
   try {
-
     sessionStorage.setItem(
       CACHE_KEY,
       JSON.stringify({ timestamp: Date.now(), data })
     );
-
   } catch (error) {
-    // sessionStorage indisponible ou plein : on continue sans cache
+    // sessionStorage indisponible ou plein : on continue sans cache.
   }
-
 }
