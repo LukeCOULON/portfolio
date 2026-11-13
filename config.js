@@ -12,7 +12,7 @@ const EXCLUDE_REPOS = [
   "MDPAD",
   "trackerpython1.0",
   "ipgrabber",
-  "TSTI2D"
+  "TSTI2D",
   "wayaverification"
 ];
 
