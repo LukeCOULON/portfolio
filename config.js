@@ -13,7 +13,8 @@ const EXCLUDE_REPOS = [
   "trackerpython1.0",
   "ipgrabber",
   "TSTI2D",
-  "wayaverification"
+  "wayaverification",
+  "planning-nao"
 ];
 
 const DESCRIPTION_OVERRIDES = {
