@@ -304,6 +304,8 @@ class="back-link"
 
 <script src="github.js"></script>
 
+<script src="i18n.js"></script>
+
 <script>
 
 /* =====================================================
@@ -409,7 +411,7 @@ function createProjectCard(repo) {
             style="background:${color}"
           ></span>
 
-          ${escapeHTML(language)}
+          ${escapeHTML(PortfolioI18n.t(language))}
 
         </span>
 
@@ -429,24 +431,24 @@ function createProjectCard(repo) {
 
 
       <p>
-        ${escapeHTML(description)}
+        ${escapeHTML(PortfolioI18n.t(description))}
       </p>
 
 
       <div class="project-card-footer">
 
         <span>
-          mise à jour
+          ${PortfolioI18n.t("mise à jour")}
           ${new Date(
             repo.pushed_at
-          ).toLocaleDateString("fr-FR")}
+          ).toLocaleDateString(PortfolioI18n.locale === "en" ? "en-US" : "fr-FR")}
         </span>
 
 
         <button
           onclick="openProject('${encodeURIComponent(repo.name)}')"
         >
-          ouvrir →
+          ${PortfolioI18n.t("ouvrir →")}
         </button>
 
       </div>
@@ -508,7 +510,7 @@ function renderProjects() {
 
       <div class="loading">
 
-        Aucun projet trouvé.
+        ${PortfolioI18n.t("Aucun projet trouvé.")}
 
       </div>
 
@@ -547,10 +549,10 @@ function createFilters() {
   filters.innerHTML = `
 
     <button
-      class="filter active"
+      class="filter ${activeLanguage === "all" ? "active" : ""}"
       data-language="all"
     >
-      tous
+      ${PortfolioI18n.t("tous")}
     </button>
 
     ${
@@ -565,7 +567,7 @@ function createFilters() {
         return `
 
           <button
-            class="filter"
+            class="filter ${activeLanguage === language ? "active" : ""}"
             data-language="${escapeHTML(language)}"
           >
 
@@ -574,7 +576,7 @@ function createFilters() {
               style="background:${color}"
             ></span>
 
-            ${escapeHTML(language)}
+            ${escapeHTML(PortfolioI18n.t(language))}
 
           </button>
 
@@ -737,7 +739,7 @@ async function openProject(encodedName) {
 
         <div class="detail-label">
 
-          ${escapeHTML(language)}
+          ${escapeHTML(PortfolioI18n.t(language))}
 
         </div>
 
@@ -748,7 +750,7 @@ async function openProject(encodedName) {
 
 
         <p>
-          ${escapeHTML(description)}
+          ${escapeHTML(PortfolioI18n.t(description))}
         </p>
 
       </div>
@@ -776,7 +778,7 @@ async function openProject(encodedName) {
               style="background:${color}"
             ></span>
 
-            ${escapeHTML(repo.language)}
+            ${escapeHTML(PortfolioI18n.t(repo.language))}
 
           </span>
         `
@@ -792,17 +794,17 @@ async function openProject(encodedName) {
       <span class="detail-tag">
 
         ${repo.forks_count || 0}
-        forks
+        ${PortfolioI18n.t("forks")}
 
       </span>
 
 
       <span class="detail-tag">
 
-        maj.
+        ${PortfolioI18n.t("maj.")}
         ${new Date(
           repo.pushed_at
-        ).toLocaleDateString("fr-FR")}
+        ).toLocaleDateString(PortfolioI18n.locale === "en" ? "en-US" : "fr-FR")}
 
       </span>
 
@@ -815,7 +817,7 @@ async function openProject(encodedName) {
     >
 
       <div class="loading">
-        chargement du README...
+        ${PortfolioI18n.t("chargement du README...")}
       </div>
 
     </div>
@@ -827,7 +829,7 @@ async function openProject(encodedName) {
         href="${zip}"
         class="project-button primary"
       >
-        ↓ Télécharger le ZIP
+        ${PortfolioI18n.t("↓ Télécharger le ZIP")}
       </a>
 
 
@@ -871,8 +873,7 @@ async function openProject(encodedName) {
 
         <p class="muted">
 
-          Ce projet ne possède pas
-          encore de README.
+          ${PortfolioI18n.t("Ce projet ne possède pas encore de README.")}
 
         </p>
 
@@ -899,7 +900,7 @@ async function openProject(encodedName) {
 
       <p class="error">
 
-        Impossible de charger le README.
+        ${PortfolioI18n.t("Impossible de charger le README.")}
 
       </p>
 
@@ -980,8 +981,7 @@ async function loadProjects() {
 
       <div class="loading error">
 
-        Impossible de récupérer
-        les projets GitHub.
+        ${PortfolioI18n.t("Impossible de récupérer les projets GitHub.")}
 
         <br><br>
 
@@ -990,7 +990,7 @@ async function loadProjects() {
           target="_blank"
           rel="noopener"
         >
-          Voir directement sur GitHub ↗
+          ${PortfolioI18n.t("Voir directement sur GitHub ↗")}
         </a>
 
       </div>
@@ -1065,6 +1065,17 @@ function openProjectFromURL() {
 /* =====================================================
    START
 ===================================================== */
+
+document.addEventListener("portfolio:languagechange", () => {
+  const openRepo = projectDetail.style.display !== "none"
+    ? repositories.find(repo => detailPath.textContent.endsWith(`/${repo.name}`))
+    : null;
+
+  createFilters();
+  renderProjects();
+
+  if (openRepo) openProject(encodeURIComponent(openRepo.name));
+});
 
 loadProjects()
   .then(

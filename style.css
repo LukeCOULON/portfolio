@@ -256,6 +256,45 @@ body.home .brand {
   backdrop-filter: blur(6px);
 }
 
+.language-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel);
+}
+
+.language-switch-floating {
+  position: fixed;
+  top: 18px;
+  right: max(5%, 18px);
+  z-index: 30;
+}
+
+.language-switch button {
+  min-width: 34px;
+  min-height: 30px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 11px var(--mono);
+  cursor: pointer;
+}
+
+.language-switch button.active {
+  background: var(--green);
+  color: #04150a;
+}
+
+.language-switch button:focus-visible {
+  outline-offset: 2px;
+}
+
 .brand {
   font-weight: 700;
   font-size: 19px;
